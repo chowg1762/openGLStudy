@@ -41,6 +41,14 @@ private:
                                         "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
                                         "}\n";
     
+    const char* yellowFragmentShaderSource=   "#version 330 core\n"
+                                        "out vec4 FragColor;\n"
+                                        "void main()\n"
+                                        "{\n"
+                                        "   FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f);\n"
+                                        "}\n";
+    
+    
     const float vertices[9] = {
         -0.5f, -0.5f, 0.0f, //bottom left
         0.5f, -0.5f, 0.0f,  //bottom right
@@ -61,10 +69,10 @@ private:
     };
     
     const float rectangleVertices[12] = {
-        -0.5f, -0.5f, 0.0f, //bottom left
-        0.5f, -0.5f, 0.0f,  //bottom right
-        -0.5f, 0.5f, 0.0f,  //top left
-        0.5f, 0.5f, 0.0f    //top right
+        -0.8f, 0.6f, 0.0f, //bottom left
+        -0.6f, 0.6f, 0.0f,  //bottom right
+        -0.8f, 0.8f, 0.0f,  //top left
+        -0.6f, 0.8f, 0.0f    //top right
     };
     
     const int rectangleIndecies[6] = {
@@ -77,7 +85,12 @@ private:
     unsigned int TRIANGLE_VAO[3];
     unsigned int TRIANGLE_VBO[3];
     unsigned int RECTANGLE_VAO, RECTANGLE_VBO, RECTANGLE_EBO;
-
+    
+    int createVertexShader(const char* vertexShader);
+    
+    int createFragmentShader(const char* fragmentShader);
+    
+    int createProgram(const char* vertexShader, const char* fragmentShader);
     
     void createTriangle(const float* vertices, int size, int indexOfTriangle);
     void drawTriangle(int indexOfTriangle);
