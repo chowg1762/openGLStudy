@@ -46,11 +46,37 @@ private:
                                         "   FragColor = vec4(outColor.xyz, 1.0f);\n"
                                         "}\n";
     
+    const char* rasterizationVertexShaderSource =   "#version 330 core\n"
+                                                    "layout(location=0) in vec3 aPos;\n"
+                                                    "layout(location=1) in vec3 aColor;\n"
+                                                    "out vec3 outColor;\n"
+                                                    "void main()\n"
+                                                    "{\n"
+                                                    "   gl_Position = vec4(aPos, 1.0);\n"
+                                                    "   outColor = aColor;\n"
+                                                    "}\0";
+                
+    
+    const char* rasterizationFragmentShaderSource = "#version 330 core\n"
+                                                    "out vec4 FragColor;\n"
+                                                    "in vec3 outColor;\n"
+                                                    "void main()\n"
+                                                    "{\n"
+                                                    "   FragColor = vec4(outColor, 1.0f);\n"
+                                                    "}\n";
+    
     const float vertices[9] = {
         -0.5f, -0.5f, 0.0f, //bottom left
         0.5f, -0.5f, 0.0f,  //bottom right
         0.0f, 0.5f, 0.0f    //top center
     };
+    
+    const float verticesWithColors[18] = {
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,//bottom left
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, //bottom right
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f //top center
+    };
+    
     
     unsigned int VAO, VBO;
     
@@ -61,6 +87,7 @@ private:
     int createProgram(const char* vertexShader, const char* fragmentShader);
     
     void createTriangle();
+    void createTriangleColorFromVertices();
     void drawTriangle();
     void destroyTriangle();
 
