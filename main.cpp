@@ -11,6 +11,7 @@
 #include "hello_triangle.hpp"
 #include "intro.hpp"
 #include "shader.hpp"
+#include "texture.hpp"
 
 void executeHelloTriangle(){
     HelloTriangle helloTriangle;
@@ -27,10 +28,17 @@ void executeShader(){
     shader.execute();
 }
 
+void executeTexture(){
+    Texture texture;
+    texture.execute();
+}
+
+
 int main(){
 //    executeIntro();
 //    executeHelloTriangle();
-    executeShader();
+//    executeShader();
+    executeTexture();
 }
 
 
