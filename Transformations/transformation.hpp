@@ -40,9 +40,10 @@ private:
                                                     "layout(location=2) in vec2 aTexCoord;\n"
                                                     "out vec3 outColor;\n"
                                                     "out vec2 TexCoord;\n"
+                                                    "uniform mat4 transformMatrix;\n"
                                                     "void main()\n"
                                                     "{\n"
-                                                    "   gl_Position = vec4(aPos, 1.0);\n"
+                                                    "   gl_Position = transformMatrix * vec4(aPos, 1.0);\n"
                                                     "   outColor = aColor;\n"
                                                     "   TexCoord = aTexCoord;\n"
                                                     "}\0";
@@ -102,6 +103,11 @@ private:
     void drawRectangle(unsigned int textureID);
     void destroyRectangle();
     
+    
+    //Transformation
+    
+    void setMatrix(unsigned int shaderID);
+    void rotateRectangleEveryFrame(unsigned int shaderProgramID);
     
     
 };

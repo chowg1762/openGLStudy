@@ -169,6 +169,25 @@ void Transformation::destroyRectangle(){
     glDeleteBuffers(1, &RECTANGLE_EBO);
 }
 
+void Transformation::setMatrix(unsigned int shaderProgramID){
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+    
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "transformMatrix"), 1 , GL_FALSE, glm::value_ptr(trans));
+
+}
+
+void Transformation::rotateRectangleEveryFrame(unsigned int shaderProgramID){
+    glm::mat4 trans = glm::mat4(1.0f);
+    
+    trans = glm::translate(trans, glm::vec3(0.5f,-0.5f,0.0f));
+    trans = glm::rotate(trans, (-1)*(float)glfwGetTime() , glm::vec3(0.0f, 0.0f, 1.0f));
+//    trans = glm::translate(trans, glm::vec3(0.5f,-0.5f,0.0f));
+
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "transformMatrix"), 1 , GL_FALSE, glm::value_ptr(trans));
+
+}
 
 void Transformation::execute(){
     glfwInit();
@@ -222,7 +241,8 @@ void Transformation::execute(){
 
     glUniform1i(glGetUniformLocation(shaderProgram, "texture1"),0);
     glUniform1i(glGetUniformLocation(shaderProgram, "texture2"),1);
-
+//    setMatrix(shaderProgram);
+    
     while(!glfwWindowShouldClose(window)){
         processInput(window);
         
@@ -232,6 +252,7 @@ void Transformation::execute(){
         glClear(GL_COLOR_BUFFER_BIT);
         
         glUseProgram(shaderProgram);
+        rotateRectangleEveryFrame(shaderProgram);
         
         activateTexture(textureID,0);
         activateTexture(texture2ID,1);
