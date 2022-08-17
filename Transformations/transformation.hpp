@@ -1,12 +1,12 @@
 //
-//  texture.hpp
+//  transformation.hpp
 //  GLFWOpenGL
 //
-//  Created by Wongeun Cho on 2022/08/07.
+//  Created by Wongeun Cho on 2022/08/17.
 //
 
-#ifndef texture_hpp
-#define texture_hpp
+#ifndef transformation_hpp
+#define transformation_hpp
 
 #include <stdio.h>
 
@@ -22,7 +22,12 @@
 
 #include "StbiWrapper.hpp"
 
-class Texture{
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
+class Transformation{
 public:
     void execute();
 
@@ -97,10 +102,9 @@ private:
     void drawRectangle(unsigned int textureID);
     void destroyRectangle();
     
+    
+    
 };
 
 
-
-#endif /* texture_hpp */
-
-
+#endif /* transformation_hpp */

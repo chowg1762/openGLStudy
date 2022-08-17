@@ -1,14 +1,15 @@
 //
-//  texture.cpp
+//  transformation.cpp
 //  GLFWOpenGL
 //
-//  Created by Wongeun Cho on 2022/08/07.
+//  Created by Wongeun Cho on 2022/08/17.
 //
 
-#include "texture.hpp"
+#include "transformation.hpp"
 
 
-unsigned int Texture::createTexture(std::string filePath, bool isRGBA){
+
+unsigned int Transformation::createTexture(std::string filePath, bool isRGBA){
     unsigned int textureID;
     int width, height, nrChannels;
     
@@ -42,14 +43,12 @@ unsigned int Texture::createTexture(std::string filePath, bool isRGBA){
 
 
 
-
-
-void Texture::processInput(GLFWwindow *window){
+void Transformation::processInput(GLFWwindow *window){
     if(glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
-int Texture::createVertexShader(const char *vertexShader){
+int Transformation::createVertexShader(const char *vertexShader){
     unsigned int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     
     glShaderSource(vertexShaderID, 1, &vertexShader, NULL);
@@ -69,7 +68,7 @@ int Texture::createVertexShader(const char *vertexShader){
     
 }
 
-int Texture::createFragmentShader(const char *fragmentShader)
+int Transformation::createFragmentShader(const char *fragmentShader)
 {
     int fragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
     
@@ -90,7 +89,7 @@ int Texture::createFragmentShader(const char *fragmentShader)
     return fragShaderID;
 }
 
-int Texture::createProgram(const char *vertexShader, const char *fragmentShader){
+int Transformation::createProgram(const char *vertexShader, const char *fragmentShader){
     int success;
     char infoLog[512];
 
@@ -123,7 +122,7 @@ int Texture::createProgram(const char *vertexShader, const char *fragmentShader)
 }
 
 
-void Texture::createRectangle(){
+void Transformation::createRectangle(){
     unsigned int RECTANGLE_VBO, RECTANGLE_EBO;
     /*Rectangle*/
     glGenVertexArrays(1, &RECTANGLE_VAO);
@@ -152,26 +151,26 @@ void Texture::createRectangle(){
 
 }
 
-void Texture::activateTexture(unsigned int textureID, int textureUnit){
+void Transformation::activateTexture(unsigned int textureID, int textureUnit){
     glActiveTexture(GL_TEXTURE0+textureUnit);
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
-void Texture::drawRectangle(unsigned int textureID){
+void Transformation::drawRectangle(unsigned int textureID){
     glBindVertexArray(RECTANGLE_VAO);
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
-void Texture::destroyRectangle(){
+void Transformation::destroyRectangle(){
     glDeleteVertexArrays(1, &RECTANGLE_VAO);
     glDeleteBuffers(1, &RECTANGLE_VBO);
     glDeleteBuffers(1, &RECTANGLE_EBO);
 }
 
 
-void Texture::execute(){
+void Transformation::execute(){
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -224,7 +223,6 @@ void Texture::execute(){
     glUniform1i(glGetUniformLocation(shaderProgram, "texture1"),0);
     glUniform1i(glGetUniformLocation(shaderProgram, "texture2"),1);
 
-    
     while(!glfwWindowShouldClose(window)){
         processInput(window);
         
@@ -249,5 +247,3 @@ void Texture::execute(){
     
     glfwTerminate();
 }
-
-
