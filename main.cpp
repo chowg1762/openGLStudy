@@ -4,9 +4,11 @@
 
 #define GLEW_STATIC
 #include "IntroManager.hpp"
+#include "LightManager.hpp"
 
 int main(){
-    IntroManager::execute();
+//    IntroManager::execute();
+    LightManager::execute();
 }
 
 
