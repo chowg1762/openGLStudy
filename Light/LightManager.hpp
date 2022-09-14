@@ -10,11 +10,12 @@
 
 #include <stdio.h>
 #include "Colors.hpp"
+#include "BasicLighting.hpp"
 
 class LightManager{
 private:
     static void colorExecute();
-    
+    static void basicLightingExecute();
 public:
     static void execute();
 };

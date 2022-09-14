@@ -3,7 +3,7 @@
 //GLEW
 
 #define GLEW_STATIC
-#include "IntroManager.hpp"
+//#include "IntroManager.hpp"
 #include "LightManager.hpp"
 
 int main(){
