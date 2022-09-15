@@ -6,84 +6,7 @@
 //
 
 #include "BasicLighting.hpp"
-
-
-
-glm::vec3 mCameraPos_light   = glm::vec3(0.0f, 0.0f,  3.0f);
-glm::vec3 mCameraFront_light = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 mCameraUp_light    = glm::vec3(0.0f, 1.0f,  0.0f);
-
-float lastFrameTime_light = 0.0f;
-float deltaTime_light = 0.0f;
-
-float lastX_light = 400, lastY_light = 300;
-float yaw_light = 0.0f, pitch_light = 0.0f;
-float fov_light = 45.0f;
-
-bool firstMouse_light = true;
-
-
-void mouse_callback_light(GLFWwindow* window, double xpos, double ypos){
-    if (firstMouse_light)
-    {
-        lastX_light = xpos;
-        lastY_light = ypos;
-        firstMouse_light = false;
-    }
-    
-    float xOffset = xpos - lastX_light;
-    float yOffset = lastY_light-ypos;
-    lastX_light = xpos;
-    lastY_light = ypos;
-    
-    const float sensitivity = 0.1f;
-    xOffset *= sensitivity;
-    yOffset *= sensitivity;
-    
-    yaw_light += xOffset;
-    pitch_light += yOffset;
-    
-    if(pitch_light > 89.0f)
-         pitch_light = 89.0f;
-     if(pitch_light < -89.0f)
-         pitch_light = -89.0f;
-
-    
-    glm::vec3 direction;
-    
-    direction.x = cos(glm::radians(yaw_light)) * cos(glm::radians(pitch_light));
-    direction.y = sin(glm::radians(pitch_light));
-    direction.z = sin(glm::radians(yaw_light)) * cos(glm::radians(pitch_light));
-    
-    mCameraFront_light = glm::normalize(direction);
-}
-
-
-void scroll_callback_light(GLFWwindow* window, double xoffset, double yoffset)
-{
-    fov_light -= (float)yoffset;
-    if (fov_light < 1.0f)
-        fov_light = 1.0f;
-    if (fov_light > 45.0f)
-        fov_light = 45.0f;
-}
-
-
-
-void BasicLighting::processInput(GLFWwindow *window){
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE)==GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    
-    const float cameraSpeed = 2.5f*deltaTime_light;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-       mCameraPos_light += cameraSpeed * mCameraFront_light;
-   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-       mCameraPos_light -= cameraSpeed * mCameraFront_light;
-   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-       mCameraPos_light -= glm::normalize(glm::cross(mCameraFront_light, mCameraUp_light)) * cameraSpeed;
-   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-       mCameraPos_light += glm::normalize(glm::cross(mCameraFront_light, mCameraUp_light)) * cameraSpeed;
-}
+#include "callbacks.h"
 
 int BasicLighting::createVertexShader(const char *vertexShader){
     unsigned int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -228,8 +151,8 @@ void BasicLighting::initMVPMatrix(unsigned int shaderProgramID){
 //    glm::mat4 projection;
 //    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
     
-    glm::mat view = glm::lookAt(mCameraPos_light, mCameraPos_light+mCameraFront_light, mCameraUp_light);
-    glm::mat4 projection = glm::perspective(glm::radians(fov_light), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat view = glm::lookAt(CallbackUtils::mCameraPos, CallbackUtils::mCameraPos+CallbackUtils::mCameraFront, CallbackUtils::mCameraUp);
+    glm::mat4 projection = glm::perspective(glm::radians(CallbackUtils::fov), 800.0f / 600.0f, 0.1f, 100.0f);
 
     glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1 , GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "view"), 1 , GL_FALSE, glm::value_ptr(view));
@@ -247,8 +170,8 @@ void BasicLighting::initLampMatrix(unsigned int shaderProgramID){
 //    glm::mat4 projection = glm::mat4(1.0f);
 //
     
-    glm::mat view = glm::lookAt(mCameraPos_light, mCameraPos_light+mCameraFront_light, mCameraUp_light);
-    glm::mat4 projection = glm::perspective(glm::radians(fov_light), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat view = glm::lookAt(CallbackUtils::mCameraPos, CallbackUtils::mCameraPos+CallbackUtils::mCameraFront, CallbackUtils::mCameraUp);
+    glm::mat4 projection = glm::perspective(glm::radians(CallbackUtils::fov), 800.0f / 600.0f, 0.1f, 100.0f);
 
     glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "view"), 1 , GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "projection"), 1 , GL_FALSE, glm::value_ptr(projection));
@@ -300,17 +223,19 @@ void BasicLighting::execute(){
     
     glEnable(GL_DEPTH_TEST);
 
+    
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, mouse_callback_light);
-    glfwSetScrollCallback(window, scroll_callback_light);
+
+    glfwSetCursorPosCallback(window, CallbackUtils::mouseCallback);
+    glfwSetScrollCallback(window, CallbackUtils::scrollCallback);
 
     
     while(!glfwWindowShouldClose(window)){
         float currentTime = glfwGetTime();
-        deltaTime_light = currentTime - lastFrameTime_light;
-        lastFrameTime_light = currentTime;
+        CallbackUtils::deltaTime = currentTime - CallbackUtils::lastFrameTime;
+        CallbackUtils::lastFrameTime = currentTime;
         
-        processInput(window);
+        CallbackUtils::processInput(window);
         
         glfwPollEvents();
         
@@ -320,7 +245,7 @@ void BasicLighting::execute(){
         glUseProgram(shaderProgram);
         initMVPMatrix(shaderProgram);
         glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
-        glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(mCameraPos_light));
+        glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(CallbackUtils::mCameraPos));
 
         drawCube();
         
