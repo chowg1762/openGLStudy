@@ -1,13 +1,13 @@
 //
-//  BasincLighting.cpp
+//  Materials.cpp
 //  GLFWOpenGL
 //
-//  Created by Wongeun Cho on 2022/09/14.
+//  Created by Wongeun Cho on 2022/09/16.
 //
 
-#include "BasicLighting.hpp"
+#include "Materials.hpp"
 
-int BasicLighting::createVertexShader(const char *vertexShader){
+int Materials::createVertexShader(const char *vertexShader){
     unsigned int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     
     glShaderSource(vertexShaderID, 1, &vertexShader, NULL);
@@ -27,7 +27,7 @@ int BasicLighting::createVertexShader(const char *vertexShader){
     
 }
 
-int BasicLighting::createFragmentShader(const char *fragmentShader)
+int Materials::createFragmentShader(const char *fragmentShader)
 {
     int fragShaderID = glCreateShader(GL_FRAGMENT_SHADER);
     
@@ -48,7 +48,7 @@ int BasicLighting::createFragmentShader(const char *fragmentShader)
     return fragShaderID;
 }
 
-int BasicLighting::createProgram(const char *vertexShader, const char *fragmentShader){
+int Materials::createProgram(const char *vertexShader, const char *fragmentShader){
     int success;
     char infoLog[512];
 
@@ -80,7 +80,7 @@ int BasicLighting::createProgram(const char *vertexShader, const char *fragmentS
     return shaderProgram;
 }
 
-void BasicLighting::createCube(){
+void Materials::createCube(){
     
     glGenVertexArrays(1, &CUBE_VAO);
     glGenBuffers(1, &CUBE_VBO);
@@ -100,7 +100,7 @@ void BasicLighting::createCube(){
     glBindVertexArray(0);
 }
 
-void BasicLighting::createLamp(){
+void Materials::createLamp(){
     glGenVertexArrays(1, &LIGHT_VAO);
     glBindVertexArray(LIGHT_VAO);
     
@@ -110,45 +110,63 @@ void BasicLighting::createLamp(){
     glEnableVertexAttribArray(0);
 }
 
-void BasicLighting::assignLightUniform(unsigned int shaderProgramID){
+void Materials::assignLightUniform(unsigned int shaderProgramID){
     glm::vec3 objectColor = glm::vec3(1.0f, 0.5f, 0.31f);
-    glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    
+    glm::vec3 ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+    glm::vec3 diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
+    glm::vec3 specular = glm::vec3(0.5f, 0.5f, 0.5f);
+    
+    
     glUniform3fv(glGetUniformLocation(shaderProgramID, "objectColor"), 1, glm::value_ptr(objectColor));
-    glUniform3fv(glGetUniformLocation(shaderProgramID, "lightColor"), 1, glm::value_ptr(lightColor));
+    
+    glUniform3fv(glGetUniformLocation(shaderProgramID, "material.ambient"), 1, glm::value_ptr(ambient));
+    glUniform3fv(glGetUniformLocation(shaderProgramID, "material.diffuse"), 1, glm::value_ptr(diffuse));
+    glUniform3fv(glGetUniformLocation(shaderProgramID, "material.specular"), 1, glm::value_ptr(specular));
+    glUniform1f(glGetUniformLocation(shaderProgramID, "material.shininess"), 32.0f);
+    
+    glm::vec3 lightColor;
+    
+    lightColor.x = static_cast<float>(sin(glfwGetTime()*2.0f));
+    lightColor.y = static_cast<float>(sin(glfwGetTime()*0.7f));
+    lightColor.z = static_cast<float>(sin(glfwGetTime()*1.3f));
+    
+    glm::vec3 diffuseLightColor = lightColor * glm::vec3(0.5f);
+    glm::vec3 ambientLightColor = diffuseLightColor * glm::vec3(0.2f);
+
+    
+    
+    glUniform3fv(glGetUniformLocation(shaderProgramID, "light.ambient"), 1, glm::value_ptr(ambientLightColor));
+    glUniform3fv(glGetUniformLocation(shaderProgramID, "light.diffuse"), 1, glm::value_ptr(diffuseLightColor));
+    glUniform3fv(glGetUniformLocation(shaderProgramID, "light.specular"), 1, glm::value_ptr(glm::vec3(1.f, 1.f, 1.f)));
+
+
 }
 
 
-void BasicLighting::drawCube(){
+void Materials::drawCube(){
     glBindVertexArray(CUBE_VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
 
-void BasicLighting::drawLamp(){
+void Materials::drawLamp(){
     glBindVertexArray(LIGHT_VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
 
-void BasicLighting::destroyCube(){
+void Materials::destroyCube(){
     glDeleteVertexArrays(1, &CUBE_VAO);
     glDeleteBuffers(1, &CUBE_VBO);
 }
 
-void BasicLighting::destroyLamp(){
+void Materials::destroyLamp(){
     glDeleteVertexArrays(1, &LIGHT_VAO);
 }
 
-void BasicLighting::initMVPMatrix(unsigned int shaderProgramID){
+void Materials::initMVPMatrix(unsigned int shaderProgramID){
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(0.5f));
-//    model = glm::rotate(model,  glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
-//    glm::mat4 view = glm::mat4(1.0f);
-//    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-//
-//    glm::mat4 projection;
-//    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
     
     glm::mat view = glm::lookAt(CallbackUtils::mCameraPos, CallbackUtils::mCameraPos+CallbackUtils::mCameraFront, CallbackUtils::mCameraUp);
     glm::mat4 projection = glm::perspective(glm::radians(CallbackUtils::fov), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -159,13 +177,12 @@ void BasicLighting::initMVPMatrix(unsigned int shaderProgramID){
 }
 
 
-void BasicLighting::initLampMatrix(unsigned int shaderProgramID){
+void Materials::initLampMatrix(unsigned int shaderProgramID){
     glm::mat4 model = glm::mat4(1.0f);
-
+    
     model = glm::translate(model, lightPos); //The sequence is very important srt.
     model = glm::scale(model, glm::vec3(0.2f));
 
-    
     glm::mat view = glm::lookAt(CallbackUtils::mCameraPos, CallbackUtils::mCameraPos+CallbackUtils::mCameraFront, CallbackUtils::mCameraUp);
     glm::mat4 projection = glm::perspective(glm::radians(CallbackUtils::fov), 800.0f / 600.0f, 0.1f, 100.0f);
 
@@ -174,7 +191,7 @@ void BasicLighting::initLampMatrix(unsigned int shaderProgramID){
     glUniformMatrix4fv(glGetUniformLocation(shaderProgramID, "model"), 1 , GL_FALSE, glm::value_ptr(model));
 }
 
-void BasicLighting::execute(){
+void Materials::execute(){
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -215,7 +232,6 @@ void BasicLighting::execute(){
     createLamp();
     
     glUseProgram(shaderProgram);    //before set uniform value into shader, don't forget use shader.
-    assignLightUniform(shaderProgram);
     
     glEnable(GL_DEPTH_TEST);
 
@@ -239,6 +255,7 @@ void BasicLighting::execute(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glUseProgram(shaderProgram);
+        assignLightUniform(shaderProgram);
         initMVPMatrix(shaderProgram);
         glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
         glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(CallbackUtils::mCameraPos));

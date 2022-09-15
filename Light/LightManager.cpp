@@ -16,7 +16,13 @@ void LightManager::basicLightingExecute(){
     BasicLighting basicLighting;
     basicLighting.execute();
 }
+
+void LightManager::materialsExecute(){
+    Materials materials;
+    materials.execute();
+}
 void LightManager::execute(){
 //    colorExecute();
-    basicLightingExecute();
+//    basicLightingExecute();
+    materialsExecute();
 }
