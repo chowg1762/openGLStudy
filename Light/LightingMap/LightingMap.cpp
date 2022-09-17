@@ -151,9 +151,6 @@ void LightingMap::createLamp(){
 
 void LightingMap::assignLightUniform(unsigned int shaderProgramID){
 
-    glm::vec3 specular = glm::vec3(0.5f, 0.5f, 0.5f);
-    
-    glUniform3fv(glGetUniformLocation(shaderProgramID, "material.specular"), 1, glm::value_ptr(specular));
     glUniform1f(glGetUniformLocation(shaderProgramID, "material.shininess"), 32.0f);
     
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
@@ -257,6 +254,7 @@ void LightingMap::execute(){
     createLamp();
     
     unsigned int textureID = createTexture(containerImage, true);
+    unsigned int specularTextureID = createTexture(containerSpecularImage, true);
     
     glUseProgram(shaderProgram);    //before set uniform value into shader, don't forget use shader.
     
@@ -289,8 +287,12 @@ void LightingMap::execute(){
         glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(lightPos));
         glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(CallbackUtils::mCameraPos));
         glUniform1i(glGetUniformLocation(shaderProgram, "Material.diffuse"),0); //Material.diffuse 를 Texture 0번에 Mapping
+        glUniform1i(glGetUniformLocation(shaderProgram, "Material.specular"),1);    //Material.specular 를 Texture 1번에 Mapping
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE0, textureID);  //Texture 0 번에 textureID Mapping.
+        glBindTexture(GL_TEXTURE_2D, textureID);  //GL_TEXTURE0 으로 Active 되어있는 GL_TEXTURE_2D 에 textureID Mapping.
+        
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, specularTextureID);  //GL_TEXTURE1 으로 Active 되어있는 GL_TEXTURE_2D 에 textureID Mapping.
 
         drawCube();
         

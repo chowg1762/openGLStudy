@@ -56,7 +56,7 @@ private:
     const char* fragmentShaderSource =  "#version 330 core\n"
                                         "struct Material{\n"
                                         "   sampler2D diffuse;\n"
-                                        "   vec3 specular;\n"
+                                        "   sampler2D specular;\n"
                                         "   float shininess;\n"
                                         "};\n"
                                         "struct Light{\n"
@@ -83,7 +83,7 @@ private:
                                         "   vec3 viewDir = normalize(viewPos - FragPos);\n"
                                         "   vec3 reflectDir = reflect(-lightDir, norm);\n"
                                         "   float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);\n"
-                                        "   vec3 specular = material.specular * spec * light.specular;\n"
+                                        "   vec3 specular = vec3(texture(material.specular,TexCoords)) * spec * light.specular;\n"
                                         "   FragColor = vec4((ambient + diffuse + specular), 1.0);\n"
                                         "}\n";
                                                     
@@ -140,6 +140,7 @@ private:
     };
     
     const std::string containerImage = "/Users/wongeuncho/Desktop/Dev/image/container.png";
+    const std::string containerSpecularImage = "/Users/wongeuncho/Desktop/Dev/image/container_specular.png";
 
     void processInput(GLFWwindow *window);
     
