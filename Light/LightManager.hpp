@@ -12,12 +12,14 @@
 #include "Colors.hpp"
 #include "BasicLighting.hpp"
 #include "Materials.hpp"
+#include "LightingMap.hpp"
 
 class LightManager{
 private:
     static void colorExecute();
     static void basicLightingExecute();
     static void materialsExecute();
+    static void lightingMapExecute();
 public:
     static void execute();
 };

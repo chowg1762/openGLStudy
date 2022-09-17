@@ -21,8 +21,14 @@ void LightManager::materialsExecute(){
     Materials materials;
     materials.execute();
 }
+
+void LightManager::lightingMapExecute(){
+    LightingMap lightingmap;
+    lightingmap.execute();
+}
 void LightManager::execute(){
 //    colorExecute();
 //    basicLightingExecute();
-    materialsExecute();
+//    materialsExecute();
+    lightingMapExecute();
 }
