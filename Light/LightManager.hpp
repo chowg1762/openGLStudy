@@ -13,6 +13,7 @@
 #include "BasicLighting.hpp"
 #include "Materials.hpp"
 #include "LightingMap.hpp"
+#include "LightCaster.hpp"
 
 class LightManager{
 private:
@@ -20,6 +21,7 @@ private:
     static void basicLightingExecute();
     static void materialsExecute();
     static void lightingMapExecute();
+    static void lightCasterExecute();
 public:
     static void execute();
 };

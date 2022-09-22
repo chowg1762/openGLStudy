@@ -26,9 +26,15 @@ void LightManager::lightingMapExecute(){
     LightingMap lightingmap;
     lightingmap.execute();
 }
+
+void LightManager::lightCasterExecute(){
+    LightCaster lightcast;
+    lightcast.execute();
+}
 void LightManager::execute(){
 //    colorExecute();
 //    basicLightingExecute();
 //    materialsExecute();
-    lightingMapExecute();
+//    lightingMapExecute();
+    lightCasterExecute();
 }
